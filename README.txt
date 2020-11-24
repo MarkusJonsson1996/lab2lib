@@ -1,4 +1,4 @@
-Reflection of Assignment 2
+Reflection on Assignment 2
 
 During this assignment i've learn't mostly about how pointers work and how they can be used. Coming from a background of C programming
 i've concept wasn't unfamiliar, but i hadn't quite understood how it worked. It is much clearer to me now. A new concept was dynamic memory allocation
