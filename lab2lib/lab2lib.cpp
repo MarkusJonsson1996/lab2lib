@@ -3,6 +3,7 @@
 //post-build command: lib lab2lib.obj
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "lab2lib.h"
 
@@ -142,7 +143,7 @@ void array_rows_cols(arr2d* arr) {
 		cout << endl;
 
 }
-void swap_sort(int* a, int* b, int* c, bool ascDec) {
+void swap_sort(int* a, int* b, int* c, bool ascDes) {
 
 	int sort[3] = { *a, *b, *c };
 	int temp;
@@ -150,13 +151,13 @@ void swap_sort(int* a, int* b, int* c, bool ascDec) {
 	for (int i = 0; i < 2; i++) {
 		for (int j = 1; j < 3; j++) {
 
-			if (sort[i] > sort[j] && ascDec) {
+			if (sort[i] > sort[j] && ascDes) {
 				temp = sort[i];
 				sort[i] = sort[j];
 				sort[j] = temp;
 			}
 
-			else if (sort[i] < sort[j] && !ascDec) {
+			else if (sort[i] < sort[j] && !ascDes) {
 				temp = sort[i];
 				sort[i] = sort[j];
 				sort[j] = temp;
@@ -166,10 +167,17 @@ void swap_sort(int* a, int* b, int* c, bool ascDec) {
 
 	}
 
-	for (int i = 0; i < 3; i++)
-		cout << sort[i] << "  ";
+	*a = sort[0];
+	*b = sort[1];
+	*c = sort[2];
 
 	cout << endl;
+}
+void swap_sort(int** a, int** b, int** c, bool ascDes) {
+
+	return swap_sort(*a, *b, *c, ascDes);
+
+
 }
 void shrink_array(int* arr, int len) {
 
@@ -198,12 +206,115 @@ void shrink_array(int* arr, int len) {
 		j++;
 	}
 }
-void vector_database() {
 
-	vector<string> database;
+void load_vector_database(vector<string>* const database) {
+	string fileName;
+	string nxtName;
+
+	cout << "Please enter name of the file: ";
+	cin >> fileName;
+
+	fileName = fileName + ".txt";
+	
+	ifstream loadFile(fileName.c_str());
+
+	if (loadFile) clear_vector_database(database);
+	else cout << "Error reading file: " << fileName << endl;
+
+	while (loadFile) {
+		loadFile >> nxtName;
+		if (loadFile.eof()) break;
+		
+		database->push_back(nxtName);
+	}
+}
+void save_vector_database(vector<string>* const database) {
+	string fileName;
+
+	cout << "Please enter name of the file: ";
+	cin >> fileName;
+	
+	fileName = fileName + ".txt";
+
+	ofstream newFile(fileName.c_str(), ios::out);
+
+	for (unsigned int i = 0; i < database->size(); i++){
+		newFile << database -> at(i) << endl;
+	}
+}
+bool print_vector_database(vector<string>* const database) {
+	bool success = 1;
+
+	if (!database -> size()) success = 0;
+
+	for (unsigned int i = 0; i < database -> size(); i++)
+		cout << i << ". " << database -> at(i) << endl;
+	
+	return success;
+}
+int search_vector_database(vector<string>* const database) {
+	string suIn;
+	int errorMsg = 0;
+
+	if (!database -> size()) errorMsg = 2;
+
+	cout << "Enter full/part of name to search in database: ";
+	cin >> suIn;
+
+	for (unsigned int i = 0; i < database -> size(); i++) {
+		if (database -> at(i).find(suIn) != string::npos)
+			cout << i << ". " << database -> at(i) << endl;
+
+		else
+			cout << i << " -------" << endl;
+
+	}
+	
+	return errorMsg;
+}
+bool clear_vector_database(vector<string>* database) {
+	bool success = true;
+
+	if (!database->size()) success = false;
+	else
+		database->clear();
+
+	return success;
+}
+int delete_vector_database(vector<string>* database, string name) {
+	int errorMsg = 0;
+
+	if (!database -> size()) errorMsg = 2;
+	else {
+
+		for (unsigned int i = 0; i < database -> size(); i++) {
+
+			if (database->at(i) == name) {
+				database->erase(database->begin() + i);
+				break;
+			}
+			else if (i == database->size() - 1) errorMsg = 1;
+		}
+	}
+	return errorMsg;
+}
+void insert_vector_database(vector<string>* database) {
+	string suIn;	
+
+	while (1) {
+		cout << "Enter name to instert in database (exit w/ q/Q): ";
+		cin >> suIn;
+
+		if (suIn == "q" || suIn == "Q") break;
+		database -> push_back(suIn);
+	}
+}
+void vector_database_editor(vector<string>* database) {
+
 	bool run = true;
 	int iuIn = 0;
-	string suIn;
+
+	cout << "VECTOR DATABASE EDITOR" << endl;
 
 	while (run) {
 		cout << endl << "MENU:" << endl << endl;
@@ -213,7 +324,9 @@ void vector_database() {
 		cout << " 3. search" << endl;
 		cout << " 4. delete" << endl;
 		cout << " 5. print" << endl;
-		cout << " 6. quit" << endl << endl;
+		cout << " 6. save" << endl;
+		cout << " 7. load" << endl;
+		cout << " 8. quit" << endl << endl;
 
 		cout << "Choose a command: ";
 		scanf_s("%d", &iuIn);
@@ -222,80 +335,34 @@ void vector_database() {
 		switch (iuIn) {
 
 		case 1:
-			database.clear();
-			cout << "Database has been cleared" << endl;
-
+			clear_vector_database(database);
 			break;
 
 		case 2:
-			while (1) {
-				cout << "Enter name to save in database (exit w/ q/Q): ";
-				cin >> suIn;
-
-				if (suIn == "q" || suIn == "Q") break;
-
-				database.push_back(suIn);
-			}
-
+			insert_vector_database(database);
 			break;
 
 		case 3:
-
-			if (!database.size()) {
-				cout << "Database is empty" << endl;
-				break;
-			}
-
-			cout << "Enter full/part of name to search in database: ";
-			cin >> suIn;
-
-			for (int i = 0; i < database.size(); i++) {
-
-
-				if (database.at(i).find(suIn) != string::npos)
-					cout << i << ". " << database.at(i) << endl;
-
-				else
-					cout << i << " -------" << endl;
-
-			}
-
+			search_vector_database(database);
 			break;
 
 		case 4:
-
-			if (!database.size()) {
-				cout << "Database is empty" << endl;
-				break;
-			}
-
-			cout << "Enter  name to erase from database: ";
-			cin >> suIn;
-
-			for (int i = 0; i < database.size(); i++) {
-
-				if (database.at(i) == suIn) {
-					cout << "\"" << database.at(i) << "\"" << " has been erased" << endl;
-					database.erase(database.begin() + i);
-					break;
-				}
-
-			}
-
+			//delete_vector_database(database, string);
 			break;
 
 		case 5:
-
-			if (!database.size()) cout << "Database is empty" << endl;
-
-			for (int i = 0; i < database.size(); i++)
-				cout << i << ". " << database.at(i) << endl;
-
+			print_vector_database(database);
 			break;
 
 		case 6:
-			run = false;
+			save_vector_database(database);
+			break;
 
+		case 7:
+			load_vector_database(database);
+			break;
+		case 8:
+			run = false;
 			break;
 
 		default:
@@ -304,6 +371,4 @@ void vector_database() {
 			break;
 		}
 	}
-
-
 }

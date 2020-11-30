@@ -148,6 +148,9 @@
       <Project>{98a42700-1398-40dc-ba42-5c6095b2920b}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="reflection.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
